@@ -40,7 +40,9 @@ func CustomHandler(fn CustomHandlerFunc) http.HandlerFunc {
 
 // FlowHandler adds a flow id to the context to identify one request flow.
 func FlowHandler(inner CustomHandlerFunc) CustomHandlerFunc {
-	return CustomHandlerFunc(func(w http.ResponseWriter, r *http.Request) (interface{}, error) {
+	return CustomHandlerFunc(func(w http.ResponseWriter, r *http.Request) (data interface{}, err error) {
+		Logger = logger
+
 		Logger.Debug("Set flowID")
 		flowID, err := uuid.NewV4()
 		if err != nil {
@@ -48,11 +50,8 @@ func FlowHandler(inner CustomHandlerFunc) CustomHandlerFunc {
 				zap.Error(err),
 			)
 		}
+		Logger = Logger.With(zap.String("flowID", flowID.String()))
 		context.Set(r, "flowID", flowID.String())
-		// set flowID to the logger context
-		Logger = Logger.With(
-			zap.String("flowID", flowID.String()),
-		)
 		Logger.Debug("flowID was set")
 		return inner(w, r)
 	})

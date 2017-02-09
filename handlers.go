@@ -15,20 +15,20 @@ func (f CustomHandlerFunc) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	f(w, r)
 }
 
-// Index shows the root endpoint / Welcome message
+// IndexHandler shows the root endpoint / Welcome message
 func IndexHandler(w http.ResponseWriter, r *http.Request) (data interface{}, err error) {
 	return "Hello chef", nil
 }
 
-// Health shows service help
+// HealthHandler shows service help
 func HealthHandler(w http.ResponseWriter, r *http.Request) (data interface{}, err error) {
-	// TODO write some code which refelcts the service health. (cpu, mem ...)
+	// TODO write some code which reflects the service health. (cpu, mem ...)
 	return Health{
 		Status: 100,
 	}, nil
 }
 
-// Swagger returns the swagger definition content
+// SwaggerHandler returns the swagger definition content
 func SwaggerHandler(w http.ResponseWriter, r *http.Request) (data interface{}, err error) {
 	fileName := "swagger"
 	var extension string

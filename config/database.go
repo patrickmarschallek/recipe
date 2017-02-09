@@ -9,6 +9,7 @@ import (
 	"github.com/kisielk/sqlstruct"
 )
 
+//DBconf database configuration.
 type DBconf struct {
 	Host     string `json:"host" yaml:"host"`
 	Database string `json:"database" yaml:"database"`
@@ -31,13 +32,24 @@ func (conf *DBconf) DBConnection() (*sql.DB, error) {
 	case conf.Driver == "postgres":
 		return sql.Open("postgres", postgresConnectionString(conf))
 	}
-	return nil, errors.New("Not supported database driver.")
+	return nil, errors.New("not supported database driver.")
+}
+
+// ConnectionString creates a database connection string from the config
+func (conf *DBconf) ConnectionString() (string, error) {
+	switch {
+	case conf.Driver == "mysql":
+		return mysqlConnectionString(conf), nil
+	case conf.Driver == "postgres":
+		return postgresConnectionString(conf), nil
+	}
+	return "", errors.New("not supported database driver.")
 }
 
 // user:password@tcp(localhost:5555)/dbname
 // [username[:password]@][protocol[(address)]]/dbname[?param1=value1&...&paramN=valueN]
 func mysqlConnectionString(conf *DBconf) string {
-	return fmt.Sprintf("%s:%s@tcp(%s:%d)/%s",
+	return fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?parseTime=true",
 		conf.User,
 		conf.Password,
 		conf.Host,
